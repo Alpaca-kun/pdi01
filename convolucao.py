@@ -1,31 +1,6 @@
 import numpy as np
 import cv2 as cv
-
-imgLena = cv.imread('./images/lena_original.png', 0)
-# imgLena = cv.imread('lena_5x5.png', 0)
-# imgLena = cv.imread('kent-plantation-house.jpg', 0)
-
-cv.imshow('Leninha', imgLena)
-cv.waitKey(0)
-cv.destroyAllWindows()
-
-print("Matriz imagem:\n")
-print(imgLena)
-
-
-mascara = np.matrix([[1/9,1/9,1/9], [1/9,1/9,1/9], [1/9,1/9,1/9]])  #filtro média
-# mascara = np.matrix([[-1,-1,-1], [2,2,2], [-1,-1,-1]])    # detecção de linha (horizontal)
-# mascara = np.matrix([[-1,2,-1], [-1,2,-1], [-1,2,-1]])    # detecção de linha (vertical)
-# mascara = np.matrix([[-1,-1,-1], [-1,8,-1], [-1,-1,-1]])  # Detecção de borda
-# mascara = np.matrix([[-1,-2,-1], [0,0,0], [1,2,1]])  # Sobel Edge
-# mascara = np.matrix([[1,1,1], [1,1,1], [1,1,1]])
-# mascara = np.matrix([[1,2,3], [4,5,6], [7,8,9]])
-# mascara = np.matrix([[1,2,1], [2,4,2], [1,2,1]])
-
-
-print("\nMáscara 3x3:\n")
-print(mascara)
-
+import time
 
 def trataBordas(matriz):
     return np.pad(matriz, pad_width=1, mode='constant', constant_values=0)
@@ -41,10 +16,10 @@ def convolucaoNormal(matriz, mascara):
     altura_tratada, largura_tratada = matriz_tratada.shape
     vetor_convolucao = np.array([])
 
-    print("Matriz com zeros:")
+    print("Matriz preenchida com zeros:")
     print(matriz_tratada)
 
-    for i in range(1, altura_tratada-1):
+    for i in range(1, altura_tratada - 1):
         for j in range(1, largura_tratada - 1):
 
             novo_valor = soma_e_multiplicacao(matriz_tratada, mascara, i, j)
@@ -94,6 +69,8 @@ def transladaMatriz(matriz, valor_pad_vertical, valor_pad_horizontal, elem_masca
 
 def convolucaoTranslação(matriz, mascara):
 
+	# matriz = trataBordas(matriz)
+
 	matrix_resultante = 0
 
 	matrix_resultante = transladaMatriz(matriz, 0, -1, mascara.item(5))
@@ -106,11 +83,59 @@ def convolucaoTranslação(matriz, mascara):
 	matrix_resultante += transladaMatriz(matriz, 0, 1, mascara.item(3))
 	matrix_resultante += transladaMatriz(matriz, 0, 0, mascara.item(4))
 
+	print("Matriz Convolução: ")
+	print(matrix_resultante)
+	
 	return matrix_resultante
 
 
-imagem_convolucao = convolucaoNormal(imgLena, mascara)
-# imagem_convolucao = convolucaoTranslação(imgLena, mascara)
+imgLena = cv.imread('./images/lena_original.png', 0)
+# imgLena = cv.imread('./images/cat.png', 0)
+# imgLena = cv.imread('lena_5x5.png', 0)
+# imgLena = cv.imread('kent-plantation-house.jpg', 0)
+
+cv.imshow('Leninha', imgLena)
+cv.waitKey(0)
+cv.destroyAllWindows()
+
+print("Matriz da imagem:\n")
+print(imgLena)
+
+
+mascara = np.matrix([[1/9, 1/9, 1/9], [1/9, 1/9, 1/9],[1/9, 1/9, 1/9]])  # filtro média
+# mascara = np.matrix([[-1,-1,-1], [2,2,2], [-1,-1,-1]])    # detecção de linha (horizontal)
+# mascara = np.matrix([[-1,2,-1], [-1,2,-1], [-1,2,-1]])    # detecção de linha (vertical)
+# mascara = np.matrix([[-1,-1,-1], [-1,8,-1], [-1,-1,-1]])  # Detecção de borda
+# mascara = np.matrix([[-1,-2,-1], [0,0,0], [1,2,1]])  # Sobel Edge
+# mascara = np.matrix([[1,1,1], [1,1,1], [1,1,1]])
+# mascara = np.matrix([[1,2,3], [4,5,6], [7,8,9]])
+# mascara = np.matrix([[1,2,1], [2,4,2], [1,2,1]])
+
+
+print("\nMáscara 3x3:\n")
+print(mascara)
+print()
+
+imagem_convolucao = [[]]
+
+print("Digite o número da convolução desejada:")
+op = int(input("1 - Normal\n2 -Translação de imagem\n"))
+
+
+while(op != 1 and op != 2):
+	print("Escolha um valor entre 0 e 1:")
+	op = input("1 - Normal\n2 -Translação de imagem\n")
+
+if(op == 1):
+	print("Convolução Normal selecionada!")
+	start = time.time()
+	imagem_convolucao = convolucaoNormal(imgLena, mascara)
+
+elif(op == 2):
+	print("Convolução por Translação de imagem selecionada!")
+	start = time.time()
+	imagem_convolucao = convolucaoTranslação(imgLena, mascara)
+
 
 alt, lar = imagem_convolucao.shape
 maior_tonalidade = np.amax(imagem_convolucao)
@@ -120,6 +145,12 @@ for i in range(alt):
         imagem_convolucao[i][j] = (imagem_convolucao[i][j]/maior_tonalidade) * 255
 
 nova_img = imagem_convolucao.astype(np.int8)
+end = time.time()
+
+print("Imagem Convolução Normalizada: ")
+print(nova_img)
+
+print("Tempo total de execução: " + str(end - start))
 
 cv.imshow('lena convolucao', nova_img)
 cv.waitKey(0)
