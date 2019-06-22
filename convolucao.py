@@ -48,18 +48,20 @@ def transladaMatriz(matriz, valor_pad_vertical, valor_pad_horizontal, elem_masca
 	
 		
 	if(valor_pad_horizontal == 1):
-		matriz = np.roll(matriz, -2, axis=1)[:, 1:]  # shift right e apaga coluna esquerda
+		matriz = np.roll(matriz, 1, axis=1)[:, 1:]  # shift right e apaga coluna esquerda
 		matriz = np.pad(matriz, ((0,0),(1,0)), mode='constant', constant_values=0) #preenche coluna esquerda com zeros
 
 	elif(valor_pad_horizontal == -1):
-		matriz = np.roll(matriz, 2, axis = 1)[:, :-1] # shift left e apaga coluna direita
+		matriz = np.roll(matriz, -1, axis = 1)[:, :-1] # shift left e apaga coluna direita
 		matriz = np.pad(matriz, ((0,0),(0,1)), mode='constant', constant_values=0) # preenche coluna direita com zeros
 
 	altura, largura = matriz.shape
 
-	for i in range(altura):
-		for j in range(largura):
-			matriz[i][j] = matriz[i][j] * elem_mascara
+	matriz = matriz * elem_mascara
+
+	# for i in range(altura):
+	# 	for j in range(largura):
+	# 		matriz[i][j] = matriz[i][j] * elem_mascara
 			
 	return matriz
 
@@ -73,15 +75,15 @@ def convolucaoTranslação(matriz, mascara):
 
 	matrix_resultante = 0
 
-	matrix_resultante = transladaMatriz(matriz, 0, -1, mascara.item(5))
-	matrix_resultante += transladaMatriz(matriz, -1, 1, mascara.item(6))
-	matrix_resultante += transladaMatriz(matriz, -1, 0, mascara.item(7))
-	matrix_resultante += transladaMatriz(matriz, -1, -1, mascara.item(8))
 	matrix_resultante += transladaMatriz(matriz, 1, 1, mascara.item(0))
 	matrix_resultante += transladaMatriz(matriz, 1, 0, mascara.item(1))
 	matrix_resultante += transladaMatriz(matriz, 1, -1, mascara.item(2))
 	matrix_resultante += transladaMatriz(matriz, 0, 1, mascara.item(3))
 	matrix_resultante += transladaMatriz(matriz, 0, 0, mascara.item(4))
+	matrix_resultante = transladaMatriz(matriz, 0, -1, mascara.item(5))
+	matrix_resultante += transladaMatriz(matriz, -1, 1, mascara.item(6))
+	matrix_resultante += transladaMatriz(matriz, -1, 0, mascara.item(7))
+	matrix_resultante += transladaMatriz(matriz, -1, -1, mascara.item(8))
 
 	print("Matriz Convolução: ")
 	print(matrix_resultante)
