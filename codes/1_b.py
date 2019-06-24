@@ -29,10 +29,10 @@ def median_cut_function(cube, n):
         return median_cut_function(left_side, n/2), median_cut_function(right_side, n/2)
 
 # ----- Main -----#
-original_image = np.array(Image.open("./images/cat.png"))
+original_image = np.array(Image.open("../images/cat.png"))
 image_dimensions = original_image.shape
 
-number_of_cubes = 4
+number_of_cubes = 8
 
 old_color = []
 replaced_color = []
@@ -40,8 +40,22 @@ replaced_color = []
 # Reshaping the original image dimensions to convert it in 2D-array
 img_2D_array = np.reshape(original_image, (image_dimensions[0] * image_dimensions[1], 
                             image_dimensions[2]))
-call_MCF = median_cut_function(img_2D_array, number_of_cubes)
+median_cut_function(img_2D_array, number_of_cubes)
 
-print(replaced_color)
-#pil_image = Image.fromarray(new_image.astype(np.uint8))
-#pil_image.save("./images/b_cat.png")
+LUT = {}
+i = 0
+
+for each_cube in old_color:
+    for each_color in each_cube:
+        LUT[tuple(each_color)] = replaced_color[i]
+
+    i += 1
+
+final_image = original_image
+
+for i in range(image_dimensions[0]):
+    for j in range(image_dimensions[1]):
+        final_image[i,j] = LUT[tuple(original_image[i,j])]
+
+pil_image = Image.fromarray(final_image.astype(np.uint8))
+pil_image.save("../images/b_cat.png")

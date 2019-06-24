@@ -1,7 +1,7 @@
 from PIL import Image
 import numpy as np
 
-original_image = np.array(Image.open("./images/cat.png"))
+original_image = np.array(Image.open("../images/cat.png"))
 
 # An array to store the arrays a, b and c
 n = np.empty(3, dtype=object)
@@ -22,12 +22,10 @@ modified_rgb_band = np.array(np.meshgrid(n[0], n[1], n[2])).T.reshape(-1, 3)
 distance = np.linalg.norm(original_image[:,:,None] -
                           modified_rgb_band[None,None,:], axis=3)
 
-print(distance.shape)
-
 # The axis=2 set up the coordinate of all color combinations
 modified_image = np.argmin(distance, axis=2)
 rgb_img = modified_rgb_band[modified_image]
 
 # Convert the array to uint8 again and save it
 pil_image = Image.fromarray(rgb_img.astype(np.uint8))
-pil_image.save("./images/modified_cat.png")
+pil_image.save("../images/a_cat.png")
